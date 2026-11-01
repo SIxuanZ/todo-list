@@ -9,3 +9,10 @@ desktop.ini
 # 依赖目录与日志（以后如果加构建工具，这一行就派上用场）
 node_modules/
 *.log
+
+# 本机的临时脚本 / 凭据，绝不进仓库
+.tmp/
+tools/
+一键授权并推送.cmd
+.git-credentials
+.oauth-token.txt
