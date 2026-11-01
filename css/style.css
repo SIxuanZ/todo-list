@@ -213,6 +213,20 @@ body {
   text-decoration: line-through;
 }
 
+/* 双击编辑时临时出现的输入框 */
+.item__edit {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+  border: 1.5px solid var(--accent);
+  border-radius: 8px;
+  outline: none;
+}
+
 .item__del {
   flex: none;
   width: 26px;

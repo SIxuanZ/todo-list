@@ -75,6 +75,52 @@ function clearDone() {
   render();
 }
 
+// ---------- 双击编辑 ----------
+
+function startEdit(id) {
+  const li = listEl.querySelector(`.item[data-id="${id}"]`);
+  const task = tasks.find((t) => t.id === id);
+  const textEl = li && li.querySelector(".item__text");
+  if (!task || !textEl) return;
+
+  const editor = document.createElement("input");
+  editor.className = "item__edit";
+  editor.type = "text";
+  editor.value = task.text;
+  editor.maxLength = 120;
+
+  let finished = false;
+
+  // commitChange=false 表示用户按了 Esc，放弃这次修改
+  function finish(commitChange) {
+    if (finished) return;
+    finished = true;
+
+    const next = editor.value.trim();
+    if (commitChange && next && next !== task.text) {
+      task.text = next;
+      saveTasks();
+    }
+    render();
+  }
+
+  editor.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      finish(true);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      finish(false);
+    }
+  });
+  // 点到别处也算保存
+  editor.addEventListener("blur", () => finish(true));
+
+  li.replaceChild(editor, textEl);
+  editor.focus();
+  editor.select();
+}
+
 // ---------- 渲染 ----------
 
 function visibleTasks() {
@@ -100,11 +146,29 @@ function render() {
     check.setAttribute("aria-label", task.done ? "标记为未完成" : "标记为已完成");
     check.addEventListener("click", () => toggleTask(task.id));
 
-    // 文字（点文字也能勾选）
+    // 文字：单击勾选，双击进入编辑
     const text = document.createElement("span");
     text.className = "item__text";
     text.textContent = task.text;
-    text.addEventListener("click", () => toggleTask(task.id));
+    text.title = "单击完成 · 双击编辑";
+
+    // 单击要等 220ms，确认不是双击的第二下，再切换完成状态
+    let clickTimer = null;
+    text.addEventListener("click", () => {
+      if (clickTimer) return;
+      clickTimer = setTimeout(() => {
+        clickTimer = null;
+        toggleTask(task.id);
+      }, 220);
+    });
+
+    text.addEventListener("dblclick", () => {
+      if (clickTimer) {
+        clearTimeout(clickTimer);
+        clickTimer = null;
+      }
+      startEdit(task.id);
+    });
 
     // 删除
     const del = document.createElement("button");
