@@ -1,0 +1,11 @@
+# 系统 / 编辑器杂项，不需要进仓库
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code 的个人设置
+.vscode/
+
+# 依赖目录与日志（以后如果加构建工具，这一行就派上用场）
+node_modules/
+*.log
